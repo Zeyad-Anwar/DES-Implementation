@@ -4,55 +4,34 @@
 #include <stdint.h>
 
 /**
- * Performs a permutation on input bits according to a permutation table
- * @param input: Input bits
- * @param output: Output bits after permutation
- * @param table: Permutation table
- * @param input_len: Number of input bits
- * @param output_len: Number of output bits
+ * Performs bit permutation on 64-bit data
+ * @param input: Input 64-bit value
+ * @param table: Permutation table (1-based indexing)
+ * @param output_len: Number of output bits (e.g., 64, 56, 48, 32)
+ * @return: Permuted value (aligned to MSB)
  */
-void permute(const uint8_t *input, uint8_t *output, const uint8_t *table, 
-             int input_len, int output_len);
+uint64_t permute(uint64_t input, const uint8_t *table, int output_len);
 
 /**
- * Gets a specific bit from a byte array
- * @param data: Byte array
- * @param bit_pos: Bit position (0-indexed)
+ * Gets a specific bit from a 64-bit value
+ * @param data: 64-bit value
+ * @param bit_pos: Bit position (0-63, where 0 is MSB)
  * @return: Bit value (0 or 1)
  */
-uint8_t get_bit(const uint8_t *data, int bit_pos);
+uint8_t get_bit64(uint64_t data, int bit_pos);
 
 /**
- * Sets a specific bit in a byte array
- * @param data: Byte array
- * @param bit_pos: Bit position (0-indexed)
- * @param value: Bit value (0 or 1)
+ * Prints a 64-bit value in hexadecimal format
+ * @param data: 64-bit value
  */
-void set_bit(uint8_t *data, int bit_pos, uint8_t value);
+void print_hex64(uint64_t data);
 
 /**
- * Performs XOR operation on two byte arrays
- * @param a: First input
- * @param b: Second input
- * @param result: XOR result
- * @param len: Length in bytes
- */
-void xor_bytes(const uint8_t *a, const uint8_t *b, uint8_t *result, int len);
-
-/**
- * Prints a byte array in hexadecimal format
- * @param data: Byte array
- * @param len: Length in bytes
- */
-void print_hex(const uint8_t *data, int len);
-
-/**
- * Converts a hex string to byte array
- * @param hex_str: Hexadecimal string
- * @param bytes: Output byte array
- * @param len: Expected length in bytes
+ * Converts a hex string to 64-bit value
+ * @param hex_str: Hexadecimal string (16 characters)
+ * @param value: Output 64-bit value
  * @return: 0 on success, -1 on error
  */
-int hex_to_bytes(const char *hex_str, uint8_t *bytes, int len);
+int hex_to_uint64(const char *hex_str, uint64_t *value);
 
 #endif /* UTILS_H */

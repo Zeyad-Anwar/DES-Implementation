@@ -83,14 +83,18 @@ void encrypt_file(const char *key_filename, const char *plaintext_filename, cons
 
     // read the plaintext into the array
     fread(plaintext, sizeof(uint64_t), num_blocks, plaintextfileptr);
+    fclose(plaintextfileptr);
     
-    // encrypt the plaintext
-    des_encrypt(plaintext, key, ciphertext);
+    // encrypt all blocks (loop is inside des_encrypt)
+    des_encrypt(plaintext, key, ciphertext, num_blocks);
 
     // write the ciphertext to the ciphertext file
     FILE *ciphertextfileptr = fopen(ciphertext_filename, "wb+");
-
     fwrite(ciphertext, sizeof(uint64_t), num_blocks, ciphertextfileptr);
+    fclose(ciphertextfileptr);
+    
+    free(plaintext);
+    free(ciphertext);
 }
 
 void decrypt_file(const char *key_filename, const char *ciphertext_filename, const char *plaintext_filename) {
@@ -111,12 +115,16 @@ void decrypt_file(const char *key_filename, const char *ciphertext_filename, con
     
     // read the ciphertext into the array
     fread(ciphertext, sizeof(uint64_t), num_blocks, ciphertextfileptr);
+    fclose(ciphertextfileptr);
     
-    // decrypt the ciphertext
-    des_decrypt(ciphertext, key, plaintext);
+    // decrypt all blocks (loop is inside des_decrypt)
+    des_decrypt(ciphertext, key, plaintext, num_blocks);
 
     // write the plaintext to the plaintext file
     FILE *plaintextfileptr = fopen(plaintext_filename, "wb+");
-
     fwrite(plaintext, sizeof(uint64_t), num_blocks, plaintextfileptr);
+    fclose(plaintextfileptr);
+    
+    free(ciphertext);
+    free(plaintext);
 }

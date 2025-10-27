@@ -3,52 +3,59 @@
 #include <string.h>
 #include <ctype.h>
 
-void permute(const uint8_t *input, uint8_t *output, const uint8_t *table, 
-             int input_len, int output_len) {
-    // TODO: Implement permutation
-    // For each position in output, get the bit from input at table[position]
-}
-
-uint8_t get_bit(const uint8_t *data, int bit_pos) {
-    int byte_index = bit_pos / 8;
-    int bit_index = 7 - (bit_pos % 8);
-    return (data[byte_index] >> bit_index) & 0x01;
-}
-
-void set_bit(uint8_t *data, int bit_pos, uint8_t value) {
-    int byte_index = bit_pos / 8;
-    int bit_index = 7 - (bit_pos % 8);
-    if (value) {
-        data[byte_index] |= (1 << bit_index);
-    } else {
-        data[byte_index] &= ~(1 << bit_index);
+uint64_t permute(uint64_t input, const uint8_t *table, int output_len) {
+    uint64_t output = 0;
+    
+    // For each bit position in the output
+    for (int i = 0; i < output_len; i++) {
+        // Table uses 1-based indexing, convert to 0-based
+        int source_bit = table[i] - 1;
+        
+        // Extract the bit from the input at the source position
+        // Bit 0 is the MSB (leftmost bit)
+        uint64_t bit_value = (input >> (63 - source_bit)) & 1ULL;
+        
+        // Place the bit in the output at position i (from MSB)
+        output |= (bit_value << (63 - i));
     }
+    
+    return output;
 }
 
-void xor_bytes(const uint8_t *a, const uint8_t *b, uint8_t *result, int len) {
-    for (int i = 0; i < len; i++) {
-        result[i] = a[i] ^ b[i];
-    }
+uint8_t get_bit64(uint64_t data, int bit_pos) {
+    // Bit 0 is MSB, bit 63 is LSB
+    return (data >> (63 - bit_pos)) & 1ULL;
 }
 
-void print_hex(const uint8_t *data, int len) {
-    for (int i = 0; i < len; i++) {
-        printf("%02X", data[i]);
-    }
-    printf("\n");
+void print_hex64(uint64_t data) {
+    printf("%016lX\n", data);
 }
 
-int hex_to_bytes(const char *hex_str, uint8_t *bytes, int len) {
-    if (strlen(hex_str) != (size_t)(len * 2)) {
+int hex_to_uint64(const char *hex_str, uint64_t *value) {
+    if (strlen(hex_str) != 16) {
         return -1;
     }
     
-    for (int i = 0; i < len; i++) {
-        char byte_str[3] = {hex_str[i*2], hex_str[i*2+1], '\0'};
-        if (!isxdigit(byte_str[0]) || !isxdigit(byte_str[1])) {
+    *value = 0;
+    for (int i = 0; i < 16; i++) {
+        if (!isxdigit(hex_str[i])) {
             return -1;
         }
-        sscanf(byte_str, "%2hhx", &bytes[i]);
+        
+        char c = hex_str[i];
+        uint64_t digit;
+        
+        if (c >= '0' && c <= '9') {
+            digit = c - '0';
+        } else if (c >= 'a' && c <= 'f') {
+            digit = c - 'a' + 10;
+        } else if (c >= 'A' && c <= 'F') {
+            digit = c - 'A' + 10;
+        } else {
+            return -1;
+        }
+        
+        *value = (*value << 4) | digit;
     }
     
     return 0;
