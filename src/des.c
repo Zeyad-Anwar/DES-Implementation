@@ -17,7 +17,7 @@ static uint32_t feistel(uint32_t right, uint64_t subkey) {
     uint32_t sbox_output = 0;
     for (int i = 0; i < 8; i++) {
         // Extract 6 bits for this S-box (from MSB)
-        int shift = 58 - (i * 6);  // 58, 52, 46, 40, 34, 28, 22, 16
+        int shift = 58 - ((i << 2) + (i << 1));  // 58, 52, 46, 40, 34, 28, 22, 16
         uint8_t six_bits = (xored >> shift) & 0x3F;
         
         // Calculate row (bits 0 and 5) and column (bits 1-4)
@@ -28,7 +28,7 @@ static uint32_t feistel(uint32_t right, uint64_t subkey) {
         uint8_t sbox_val = S[i][row][col];
         
         // Place in output (from MSB)
-        sbox_output |= ((uint32_t)sbox_val) << (28 - i * 4);
+        sbox_output |= ((uint32_t)sbox_val) << (28 - (i << 2));
     }
     
     // P-box permutation
@@ -163,9 +163,9 @@ void des_decrypt(const uint64_t *ciphertext, uint64_t key, uint64_t *plaintext, 
         uint32_t R = (uint32_t)(permuted & 0xFFFFFFFF);
         
         // 16 rounds with reversed key order
-        for (int round = 0; round < 16; round++) {
+        for (int round = 15; round >= 0; round--) {
             uint32_t temp = R;
-            uint32_t f_result = feistel(R, round_keys[15 - round]);
+            uint32_t f_result = feistel(R, round_keys[round]);
             R = L ^ f_result;
             L = temp;
         }

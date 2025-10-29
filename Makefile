@@ -1,8 +1,8 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Iinclude -std=c11
+CFLAGS = -Wall -Wextra -Iinclude -std=c17 -O3
 DEBUG_FLAGS = -g -O0
-RELEASE_FLAGS = -O2
+RELEASE_FLAGS = -O3
 
 # Directories
 SRC_DIR = src
