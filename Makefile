@@ -22,7 +22,8 @@ TEST_OBJECTS = $(patsubst $(TEST_DIR)/%.c,$(BUILD_DIR)/%.o,$(TEST_SOURCES))
 
 # Executables
 TARGET = $(BUILD_DIR)/des
-TEST_TARGET = $(BUILD_DIR)/test_des
+TEST_DES_TARGET = $(BUILD_DIR)/test_des
+TEST_UTILS_TARGET = $(BUILD_DIR)/test_utils
 
 # Default target
 all: $(TARGET)
@@ -31,12 +32,19 @@ all: $(TARGET)
 $(TARGET): $(OBJECTS) $(MAIN_OBJ)
 	$(CC) $(CFLAGS) $(RELEASE_FLAGS) $^ -o $@
 
-# Test executable
+# Test executables
 test: CFLAGS += $(DEBUG_FLAGS)
-test: $(TEST_TARGET)
-	./$(TEST_TARGET)
+test: $(TEST_DES_TARGET) $(TEST_UTILS_TARGET)
+	@echo "Running DES tests..."
+	./$(TEST_DES_TARGET)
+	@echo ""
+	@echo "Running utility tests..."
+	./$(TEST_UTILS_TARGET)
 
-$(TEST_TARGET): $(OBJECTS) $(TEST_OBJECTS)
+$(TEST_DES_TARGET): $(OBJECTS) $(BUILD_DIR)/test_des.o
+	$(CC) $(CFLAGS) $^ -o $@
+
+$(TEST_UTILS_TARGET): $(OBJECTS) $(BUILD_DIR)/test_utils.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 # Compile source files
