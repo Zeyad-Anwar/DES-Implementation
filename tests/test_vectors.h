@@ -35,6 +35,12 @@ static const test_vector_t test_vectors[] = {
         0x95F8A5E5DD31D900ULL,
         0x0101010101010101ULL,
         0x8000000000000000ULL
+    },
+    {
+        "Reference test",
+        0x02468ACEECA86420ULL,
+        0x0F1571C947D9E859ULL,
+        0xDA02CE3A89ECAC3BULL
     }
 };
 

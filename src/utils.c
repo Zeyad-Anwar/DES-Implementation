@@ -7,13 +7,10 @@ uint64_t permute(uint64_t input, const uint8_t *table, int output_len) {
     uint64_t output = 0;
     
     // For each bit position in the output
-    for (int i = 0; i < output_len; i++) {
-        // Table uses 1-based indexing, convert to 0-based
-        int source_bit = table[i] - 1;
-        
+    for (int i = 0; i < output_len; i++) {        
         // Extract the bit from the input at the source position
         // Bit 0 is the MSB (leftmost bit)
-        uint64_t bit_value = (input >> (63 - source_bit)) & 1ULL;
+        uint64_t bit_value = (input >> (table[i])) & 1ULL;
         
         // Place the bit in the output at position i (from MSB)
         output |= (bit_value << (63 - i));
